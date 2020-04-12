@@ -197,32 +197,30 @@ class TrieNode:
         
         self.__children   = {}
         self.__level    = level
+        self.__node     = string[0] if level > 0 else ''
 #         if len(string) < level:
 #             raise Exception("string is shorter than the curren node level: "
 #                             "[{}] local length={}".format(string, level))
         if len(string) == 0:
             self.__addBookingIndex(booking_index)
         else:
-            self.__node     = string[0]
-            
             ## append TrieNode child
-            self.__appendChild(string[1:], booking_index, level+1)
+            string = string[1:] if level > 0 else string
+            self.__appendChild(string, booking_index, level)
     
     def add(self, string, booking_index):
-        self.__appendChild(string, booking_index, 1)
+        self.__appendChild(string, booking_index, 0)
     
     ## Searh algotirhm 
     def search(self, string):
         
-        if string[0] in self.__children:
-            if len(string) == self.__children[string[0]].__level:
-                if hasattr(self.__children[string[0]], '__indexes'):
-                    return self.__children[string[0]].__indexes
-                return None
-            else:
-                return self.__children[string[0]].search(string[1:])
+        if len(string) == 0:
+            return self.__indexes
         else:
-            return None
+            if string[0] in self.__children:
+                return self.__children[string[0]].search(string[1:])
+            else:
+                return None
     
     ## Child append
     def __appendChild(self, string, booking_index, level):
@@ -230,48 +228,52 @@ class TrieNode:
             self.__addBookingIndex(booking_index)
         else:    
             if string[0] in self.__children:
-                self.__children[string[0]] = self.__appendChild(string[1:], 
-                                                              booking_index, 
-                                                              level+1)
+                self.__children[string[0]].__appendChild(string[1:], 
+                                                                booking_index, 
+                                                                level+1)
             else:
-                self.__children[string[0]] = TrieNode(string[1:], 
+                self.__children[string[0]] = TrieNode(string, 
                                                       booking_index, 
                                                       level+1)
     ## Location append         
     def __addBookingIndex(self, booking_index):
-        if hasattr(self, '__indexes'):
+        if hasattr(self, '_TrieNode__indexes'):
             self.__indexes.add(booking_index)
         else:
             self.__indexes = set([booking_index])
     
-    def __repr__(self):
-        self.__printTree(0)
+    def printTree(self):
+        _tab = ''.join(['·']*self.__level)
+        _indx_str = ''
+        if hasattr(self,'_TrieNode__indexes'):
+            _indx_str = self.__indexes
         
-    def __printTree(self, lev=0):
-        _tab = ''.join(['.']*lev)
+        print(_tab, "<{}> {}".format(self.__node, _indx_str))
         for key, child in self.__children.items():
-            if hasattr(child, '__children'):
-                print(_tab, key)
-                child.__printTree(lev+1)
-            else:
-                print(_tab, child.__indexes, key)
+            child.printTree()
     
 class Trie:
     
     def __init__(self, string, booking_index):
-        self.__root = TrieNode(string, booking_index, level=1)
+        self.__root = TrieNode(string, booking_index, level=0)
     
     def search(self, string):
         """ Return booking index of the exact string or None if it's not in """
         return self.__root.search(string)
     
     def add(self, string, booking_index):
-        self.add(string, booking_index, 1)
+        self.__root.add(string, booking_index)
         
-    def __repr__(self):
-        print(self.__root)
+    def printTrie(self):
+        self.__root.printTree()
+        return ""
     
 trie = Trie('aasd', 10)
-print(trie)
-trie.search('aasd')
-trie.add('adds', 99)
+trie.add('aasd', 20)
+trie.add('a2sd', 21)
+
+_str = 'aasd'
+print("index for:", _str, " -> ", trie.search(_str))
+trie.add('as', 99)
+trie.add('as sd', 88)
+trie.printTrie()
