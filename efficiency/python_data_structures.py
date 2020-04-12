@@ -249,7 +249,7 @@ class TrieNode:
             _indx_str = self.__indexes
         
         print(_tab, "<{}> {}".format(self.__node, _indx_str))
-        for key, child in self.__children.items():
+        for child in self.__children.values():
             child.printTree()
     
 class Trie:
@@ -266,8 +266,9 @@ class Trie:
         
     def printTrie(self):
         self.__root.printTree()
-        return ""
     
+
+print("\nTries::")
 trie = Trie('aasd', 10)
 trie.add('aasd', 20)
 trie.add('a2sd', 21)
