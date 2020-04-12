@@ -70,7 +70,11 @@ class Context():
         result = self._strategy.multiply(2.5, result)
         
         print("result:", result)
-        
+
+""" Note:
+    This example is not a reference case, since we usually use this pattern
+    to treat one type of object with different strategies; not different types
+    of objects with an strategy for each one."""
 if __name__ == "__main__":
     cInt = Context(IntegerOperation)
     cInt.computeOperationValues(1, 3)
