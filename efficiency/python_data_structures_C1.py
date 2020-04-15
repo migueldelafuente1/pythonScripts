@@ -1,4 +1,6 @@
 from time import time
+from binstar_client.commands.search import search
+from astropy.units import al
 
 def timer(function, *args):
     N = 1000
@@ -278,3 +280,14 @@ print("index for:", _str, " -> ", trie.search(_str))
 trie.add('as', 99)
 trie.add('as sd', 88)
 trie.printTrie()
+
+
+"""
+A Patricia Tree has repeated syllables in its nodes, shorting further the search
+cost:
+
+                ''
+        al                  d
+    fred    ways        r           ab
+                    ink     aw
+"""
